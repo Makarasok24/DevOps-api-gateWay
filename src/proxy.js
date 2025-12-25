@@ -11,7 +11,7 @@ const SERVICES = {
 // Path mappings
 const PATH_MAPPINGS = {
   products: '/api/v1/products',
-  inventory: '/',
+  inventory: '/inventory',
   orders: '/',
   users: '/'
 };
@@ -51,7 +51,7 @@ function setupProxies(app) {
   });
 
   // Inventory Service
-  app.use('/inventory', async (req, res) => {
+  app.use('/api/inventory', async (req, res) => {
     try {
       const path = req.path === '/' ? PATH_MAPPINGS.inventory : PATH_MAPPINGS.inventory + req.path;
       const queryString = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
