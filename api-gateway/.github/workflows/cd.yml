@@ -1,0 +1,58 @@
+name: CD Pipeline - Deploy to Railway
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Install Railway CLI
+      run: npm install -g @railway/cli
+    
+    - name: Deploy to Railway
+      run: railway up --service api-gateway
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Wait for deployment
+      run: sleep 30
+    
+    - name: Health check
+      run: |
+        RAILWAY_URL="${{ secrets.RAILWAY_URL }}"
+        if [ ! -z "$RAILWAY_URL" ]; then
+          curl -f "$RAILWAY_URL/health" || exit 1
+          echo "Deployment successful! Health check passed."
+        else
+          echo "RAILWAY_URL not set, skipping health check"
+        fi
+      continue-on-error: true
+    
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment to Railway successful!"
+        else
+          echo "❌ Deployment to Railway failed!"
+        fi
