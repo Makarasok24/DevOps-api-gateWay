@@ -28,8 +28,14 @@ jobs:
     - name: Install Railway CLI
       run: npm install -g @railway/cli
     
+    - name: List Railway services
+      run: railway service list || echo "Could not list services"
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      continue-on-error: true
+    
     - name: Deploy to Railway
-      run: railway up
+      run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     
