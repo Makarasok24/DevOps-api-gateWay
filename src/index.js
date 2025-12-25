@@ -54,6 +54,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Stock management routes (before proxy routes)
+const stockRoutes = require('./routes/stock');
+app.use('/api/stock', stockRoutes);
+
 // Routes
 const { setupProxies } = require('./proxy');
 setupProxies(app);
