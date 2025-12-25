@@ -21,7 +21,7 @@ async function addStock(productId, quantity) {
     );
     
     // 2. Update product service stock
-    const productResponse = await axios.patch(
+    const productResponse = await axios.put(
       `${SERVICES.products}/api/v1/products/${productId}`,
       { stock: inventoryResponse.data.new_quantity || inventoryResponse.new_quantity} ,
       { timeout: 30000 }
