@@ -6,9 +6,16 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "build": "docker build -t api-gateway:latest .",
+    "build:prod": "docker build --no-cache -t api-gateway:prod .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
     "test": "jest --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "lint": "echo 'No linter configured'",
+    "deploy": "npm run test && npm run build"
   },
   "keywords": [],
   "author": "",
