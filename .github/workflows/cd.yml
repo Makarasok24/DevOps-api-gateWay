@@ -1,63 +1,30 @@
 name: CD Pipeline - Deploy to Railway
 
-# Disabled - Railway deploys automatically from main branch
+# ⚠️ DISABLED - Railway deploys automatically via GitHub integration
+# Railway is already connected and deploys when you push to main
+# No need for manual deployment via GitHub Actions
+#
+# To use this workflow:
+# 1. Make sure Railway is NOT already auto-deploying
+# 2. Get your service name: run `railway service list` locally
+# 3. Add RAILWAY_SERVICE_NAME secret in GitHub
+# 4. Uncomment the workflow_dispatch trigger below
+
 on:
-  workflow_dispatch:
+  # workflow_dispatch:  # Uncomment to enable manual deployment
+  push:
+    branches: [ never ]  # Disabled - will never trigger
 
 jobs:
   deploy:
-    name: Deploy to Railway
+    name: Deploy to Railway (Disabled)
     runs-on: ubuntu-latest
+    if: false  # This workflow is disabled
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run tests
-      run: npm test
-    
-    - name: Install Railway CLI
-      run: npm install -g @railway/cli
-    
-    - name: List Railway services
-      run: railway service list || echo "Could not list services"
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      continue-on-error: true
-    
-    - name: Deploy to Railway
-      run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-    
-    - name: Wait for deployment
-      run: sleep 30
-    
-    - name: Health check
+    - name: Disabled
       run: |
-        RAILWAY_URL="${{ secrets.RAILWAY_URL }}"
-        if [ ! -z "$RAILWAY_URL" ]; then
-          curl -f "$RAILWAY_URL/health" || exit 1
-          echo "Deployment successful! Health check passed."
-        else
-          echo "RAILWAY_URL not set, skipping health check"
-        fi
-      continue-on-error: true
-    
-    - name: Notify deployment status
-      if: always()
-      run: |
-        if [ ${{ job.status }} == 'success' ]; then
-          echo "✅ Deployment to Railway successful!"
-        else
-          echo "❌ Deployment to Railway failed!"
-        fi
+        echo "⚠️  This workflow is disabled"
+        echo "✅ Railway auto-deploys from main branch"
+        echo "✅ No action needed - your app is already deploying!"
+        exit 0
