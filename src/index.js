@@ -39,10 +39,10 @@ app.get('/api/status', (req, res) => {
   res.json({
     gateway: 'UP',
     services: {
-      products: process.env.PRODUCT_SERVICE_URL || 'http://wgss0wws0osco4o48soo4kko.34.87.12.222.sslip.io',
-      inventory: process.env.INVENTORY_SERVICE_URL || 'http://localhost:8000',
-      orders: process.env.ORDER_SERVICE_URL || 'http://localhost:4000',
-      users: process.env.USER_SERVICE_URL || 'http://localhost:5000'
+      products: process.env.PRODUCT_SERVICE_URL ,
+      inventory: process.env.INVENTORY_SERVICE_URL,
+      orders: process.env.ORDER_SERVICE_URL,
+      users: process.env.USER_SERVICE_URL
     },
     timestamp: new Date().toISOString()
   });

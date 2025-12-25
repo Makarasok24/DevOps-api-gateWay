@@ -3,16 +3,19 @@ const axios = require('axios');
 // Service URLs
 const SERVICES = {
   products: process.env.PRODUCT_SERVICE_URL || 'http://wgss0wws0osco4o48soo4kko.34.87.12.222.sslip.io',
-  inventory: process.env.INVENTORY_SERVICE_URL || 'http://localhost:8000',
+  inventory: process.env.INVENTORY_SERVICE_URL || 'https://api.soksothy.me',
   orders: process.env.ORDER_SERVICE_URL || 'http://localhost:4000',
   users: process.env.USER_SERVICE_URL || 'http://localhost:5000'
 };
 
+// Log service URLs on startup
+console.log('🔗 Service URLs:', JSON.stringify(SERVICES, null, 2));
+
 // Path mappings
 const PATH_MAPPINGS = {
   products: '/api/v1/products',
-  inventory: '/inventory',
-  orders: '/',
+  inventory: '/api/v1/inventory/items',
+  orders: '/api/v1/orders',
   users: '/'
 };
 

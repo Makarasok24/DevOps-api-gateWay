@@ -14,7 +14,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - PRODUCT_SERVICE_URL=${PRODUCT_SERVICE_URL:-http://wgss0wws0osco4o48soo4kko.34.87.12.222.sslip.io}
-      - INVENTORY_SERVICE_URL=${INVENTORY_SERVICE_URL:-http://localhost:8000}
+      - INVENTORY_SERVICE_URL=${INVENTORY_SERVICE_URL:-https://api.soksothy.me}
       - ORDER_SERVICE_URL=${ORDER_SERVICE_URL:-http://localhost:4000}
       - USER_SERVICE_URL=${USER_SERVICE_URL:-http://localhost:5000}
     healthcheck:
