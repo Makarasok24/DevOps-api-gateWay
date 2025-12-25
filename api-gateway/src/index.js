@@ -34,9 +34,47 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Services status endpoint
+app.get('/api/status', (req, res) => {
+  res.json({
+    gateway: 'UP',
+    services: {
+      products: process.env.PRODUCT_SERVICE_URL || 'http://wgss0wws0osco4o48soo4kko.34.87.12.222.sslip.io',
+      inventory: process.env.INVENTORY_SERVICE_URL || 'http://localhost:8000',
+      orders: process.env.ORDER_SERVICE_URL || 'http://localhost:4000',
+      users: process.env.USER_SERVICE_URL || 'http://localhost:5000'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[Request] ${req.method} ${req.path}`);
+  next();
+});
+
 // Routes
 const { setupProxies } = require('./proxy');
 setupProxies(app);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.path} not found`,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('[Error]', err.stack);
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Export app for testing
 module.exports = app;
@@ -44,8 +82,8 @@ module.exports = app;
 // Only start server if not in test environment
 if (require.main === module) {
   const server = app.listen(PORT, () => {
-    console.log(`🚀 API Gateway running on port ${PORT}`);
-    console.log(`📊 Health: http://localhost:${PORT}/health`);
+    console.log(` API Gateway running on port ${PORT}`);
+    console.log(` Health: http://localhost:${PORT}/health`);
   });
   
   // Handle graceful shutdown
