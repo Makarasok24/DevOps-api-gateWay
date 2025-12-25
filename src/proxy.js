@@ -51,7 +51,7 @@ function setupProxies(app) {
   });
 
   // Inventory Service
-  app.use('/api/inventory', async (req, res) => {
+  app.use('/inventory', async (req, res) => {
     try {
       const path = req.path === '/' ? PATH_MAPPINGS.inventory : PATH_MAPPINGS.inventory + req.path;
       const queryString = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
