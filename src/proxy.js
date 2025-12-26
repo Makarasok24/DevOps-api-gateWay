@@ -15,7 +15,7 @@ console.log('🔗 Service URLs:', JSON.stringify(SERVICES, null, 2));
 const PATH_MAPPINGS = {
   products: '/api/products',
   inventory: '/api/v1/inventory/items',
-  orders: '/api/v1/orders',
+  orders: '/api/orders',
   users: '/'
 };
 

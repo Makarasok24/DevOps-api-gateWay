@@ -1,0 +1,19 @@
+{
+    "fullName": "Prod Test",
+    "email": "prod@test.com",
+    "address": "123 St",
+    "city": "City",
+    "zipCode": "12345",
+    "items": [
+        {
+            "productId": "14",
+            "quantity": 2,
+            "price": 23.00
+        },
+        {
+            "productId": "13",
+            "quantity": 2,
+            "price": 0.03
+        }
+    ]
+}

@@ -58,6 +58,42 @@ app.use((req, res, next) => {
 const stockRoutes = require('./routes/stock');
 app.use('/api/stock', stockRoutes);
 
+// Order creation endpoint (before proxy routes)
+app.post('/api/orders', async (req, res) => {
+  try {
+    const axios = require('axios');
+    const orderServiceUrl = process.env.ORDER_SERVICE_URL || 'https://order-service-dm41.onrender.com';
+    
+    console.log(`[Order] Creating order via ${orderServiceUrl}/api/orders`);
+    console.log(`[Order] Request body:`, JSON.stringify(req.body, null, 2));
+    
+    const response = await axios.post(
+      `${orderServiceUrl}/api/orders`,
+      req.body,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 60000 // 60 seconds for order service
+      }
+    );
+    
+    console.log(`[Order] Order created successfully:`, response.data);
+    res.status(response.status).json(response.data);
+    
+  } catch (error) {
+    console.error(`[Order Error]`, error.message);
+    console.error(`[Order Error] Response:`, error.response?.data);
+    
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to create order',
+      message: error.response?.data?.message || error.message,
+      details: error.response?.data,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Routes
 const { setupProxies } = require('./proxy');
 setupProxies(app);
