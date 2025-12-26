@@ -17,13 +17,7 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests'
-});
-app.use('/api', limiter);
+
 
 // Health check
 app.get('/health', (req, res) => {
