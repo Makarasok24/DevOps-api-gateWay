@@ -324,6 +324,63 @@ async function getLowStock() {
     throw error;
   }
 }
+
+/**
+ * Check stock availability for a product
+ */
+async function checkAvailability(productId, requiredQuantity) {
+  try {
+    const resolvedId = await resolveProductId(productId);
+    const payload = {
+      product_id: resolvedId,
+      required_quantity: requiredQuantity
+    };
+    
+    console.log(`[Stock] Checking availability for product ${resolvedId}, required: ${requiredQuantity}`);
+    
+    const response = await axios.post(
+      `${SERVICES.inventory}/api/v1/inventory/check-availability`,
+      payload,
+      { timeout: 30000 }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error(`[Stock Error] Failed to check availability:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Check bulk stock availability for multiple products
+ */
+async function checkBulkAvailability(items) {
+  try {
+    // Resolve all product IDs
+    const resolvedItems = await Promise.all(
+      items.map(async (item) => ({
+        product_id: await resolveProductId(item.product_id),
+        required_quantity: item.required_quantity
+      }))
+    );
+    
+    const payload = { items: resolvedItems };
+    
+    console.log(`[Stock] Checking bulk availability for ${items.length} products`);
+    
+    const response = await axios.post(
+      `${SERVICES.inventory}/api/v1/inventory/check-availability/bulk`,
+      payload,
+      { timeout: 30000 }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error(`[Stock Error] Failed to check bulk availability:`, error.message);
+    throw error;
+  }
+}
+
 /**
  * Sync stock between inventory and product services
  */
@@ -445,5 +502,7 @@ module.exports = {
   getProduct,
   updateProductStock,
   createProductWithInventory,
-  createInventoryItem
+  createInventoryItem,
+  checkAvailability,
+  checkBulkAvailability
 };

@@ -144,6 +144,76 @@ router.get('/lowStock', async (req, res) => {
 });
 
 /**
+ * Check stock availability for a single product
+ * POST /stock/check-availability
+ * Body: { product_id: string, required_quantity: number }
+ * Note: Must be defined before /:productId route to avoid conflicts
+ */
+router.post('/check-availability', async (req, res) => {
+  try {
+    const { product_id, required_quantity } = req.body;
+    
+    if (!product_id || required_quantity === undefined) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'product_id and required_quantity are required'
+      });
+    }
+    
+    const result = await stockService.checkAvailability(product_id, required_quantity);
+    
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('[Stock Route Error]', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to check availability',
+      message: error.response?.data?.message || error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
+ * Check bulk stock availability for multiple products
+ * POST /stock/check-availability/bulk
+ * Body: { items: [{ product_id: string, required_quantity: number }] }
+ * Note: Must be defined before /check-availability route to avoid conflicts
+ */
+router.post('/check-availability/bulk', async (req, res) => {
+  try {
+    const { items } = req.body;
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        error: 'Invalid request',
+        message: 'items array is required and must not be empty'
+      });
+    }
+    
+    // Validate each item
+    for (const item of items) {
+      if (!item.product_id || item.required_quantity === undefined) {
+        return res.status(400).json({
+          error: 'Invalid request',
+          message: 'Each item must have product_id and required_quantity'
+        });
+      }
+    }
+    
+    const result = await stockService.checkBulkAvailability(items);
+    
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('[Stock Route Error]', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to check bulk availability',
+      message: error.response?.data?.message || error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
  * Sync all products from inventory to product service
  * POST /stock/sync-all
  * Note: Must be defined before /:productId route to avoid conflicts
