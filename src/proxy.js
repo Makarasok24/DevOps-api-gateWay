@@ -13,7 +13,7 @@ console.log('🔗 Service URLs:', JSON.stringify(SERVICES, null, 2));
 
 // Path mappings
 const PATH_MAPPINGS = {
-  products: '/api/v1/products',
+  products: '/api/products',
   inventory: '/api/v1/inventory/items',
   orders: '/api/v1/orders',
   users: '/'

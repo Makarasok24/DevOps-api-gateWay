@@ -3,6 +3,41 @@ const router = express.Router();
 const stockService = require('../services/stockService');
 
 /**
+ * Create product with inventory sync
+ * POST /stock/products
+ * Body: { name, sku, description, price, stock, warehouse_location? }
+ */
+router.post('/products', async (req, res) => {
+  try {
+    const { warehouse_location, ...productData } = req.body;
+    
+    if (!productData.name || !productData.sku) {
+      return res.status(400).json({
+        error: 'Invalid product data',
+        message: 'Name and SKU are required'
+      });
+    }
+    
+    const result = await stockService.createProductWithInventory(
+      productData,
+      warehouse_location || 'WH-A1'
+    );
+    
+    res.status(201).json({
+      message: 'Product and inventory created successfully',
+      ...result
+    });
+  } catch (error) {
+    console.error('[Stock Route Error]', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to create product',
+      message: error.response?.data?.message || error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
  * Add stock to a product
  * POST /stock/:productId/add
  * Body: { quantity: number }
@@ -88,6 +123,11 @@ router.get('/:productId', async (req, res) => {
   }
 });
 
+/**
+ * Get low stock items
+ * GET /stock/lowStock
+ * Note: Must be defined before /:productId route to avoid conflicts
+ */
 router.get('/lowStock', async (req, res) => {
   try {
     const result = await stockService.getLowStock();
@@ -96,7 +136,31 @@ router.get('/lowStock', async (req, res) => {
   } catch (error) {
     console.error('[Stock Route Error]', error.message);
     res.status(error.response?.status || 500).json({
-      error: 'Failed to get stock',
+      error: 'Failed to get low stock',
+      message: error.response?.data?.message || error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
+ * Sync all products from inventory to product service
+ * POST /stock/sync-all
+ * Note: Must be defined before /:productId route to avoid conflicts
+ */
+router.post('/sync-all', async (req, res) => {
+  try {
+    console.log('[Stock Route] Starting bulk sync...');
+    const result = await stockService.syncAllProducts();
+    
+    res.status(200).json({
+      message: 'Bulk sync completed',
+      ...result
+    });
+  } catch (error) {
+    console.error('[Stock Route Error]', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to sync all products',
       message: error.response?.data?.message || error.message,
       timestamp: new Date().toISOString()
     });
